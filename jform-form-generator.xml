@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dleplugin>
+	<name>Jform Form Generator</name>
+	<description>اولین پلاگین فرمساز دیتالایف لنجین با قابلیت Drag&amp;Drop</description>
+	<icon></icon>
+	<version>1.0</version>
+	<dleversion>13</dleversion>
+	<versioncompare>greater</versioncompare>
+	<upgradeurl>https://raw.githubusercontent.com/jyarali/jform-dle/master/updates.json</upgradeurl>
+	<filedelete>0</filedelete>
+	<needplugin></needplugin>
+	<mnotice>0</mnotice>
+	<mysqlinstall><![CDATA[CREATE TABLE IF NOT EXISTS `{prefix}_jform` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL DEFAULT '',
+  `data` TEXT NOT NULL DEFAULT '',
+  `active` tinyint(1) NOT NULL DEFAULT '1',
+  `security_code` tinyint(1) NOT NULL DEFAULT '0',
+  `tracking` tinyint(1) NOT NULL DEFAULT '0',
+  `date` datetime NOT NULL DEFAULT NOW(),
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET={charset};
+
+CREATE TABLE IF NOT EXISTS `{prefix}_jform_data` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11),
+  `form_id` int(11) NOT NULL,
+  `form_data` TEXT NOT NULL DEFAULT '',
+  `msg_read` tinyint(1) NOT NULL DEFAULT '0',
+  `tracking` varchar(255) NULL,
+  `description` TEXT NULL,
+  `date` datetime NOT NULL DEFAULT NOW(),
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET={charset};]]></mysqlinstall>
+	<mysqlupgrade><![CDATA[]]></mysqlupgrade>
+	<mysqlenable><![CDATA[]]></mysqlenable>
+	<mysqldisable><![CDATA[]]></mysqldisable>
+	<mysqldelete><![CDATA[DROP TABLE IF EXISTS `{prefix}_jform`;
+DROP TABLE IF EXISTS `{prefix}_jform_data`;]]></mysqldelete>
+	<phpinstall><![CDATA[$setting = [
+	'access_group' => [1],
+  	'data_access_group' => [1]
+];
+file_put_contents (ENGINE_DIR . '/data/jform.txt', serialize($setting));]]></phpinstall>
+	<phpupgrade><![CDATA[]]></phpupgrade>
+	<phpenable><![CDATA[]]></phpenable>
+	<phpdisable><![CDATA[]]></phpdisable>
+	<phpdelete><![CDATA[]]></phpdelete>
+	<notice><![CDATA[]]></notice>
+	<file name="engine/skins/default.skin.php">
+		<operation action="before">
+			<searchcode><![CDATA[	if( count( $menu_item ) ) $sidebar= implode("", $menu_item);]]></searchcode>
+			<replacecode><![CDATA[  #####JForm Plugin
+	$menu_item[] = '<li class="">
+    <a href="#" class="has-ul legitRipple"><i class="fa fa-wpforms"></i> <span>پلاگین فرمساز JForm</span></a>
+    <ul class="hidden-ul" style="display: none;">
+        <li>
+            <a href="?mod=jform" class="legitRipple">لیست فرم‌ها</a>
+        </li>
+        <li><a href="?mod=jform&action=new" class="legitRipple">افزودن فرم جدید</a></li>
+        <li><a href="?mod=jform&action=setting" class="legitRipple">تنظیمات پلاگین</a></li>
+    </ul>
+</li>';
+  #####JForm Plugin]]></replacecode>
+		</operation>
+	</file>
+	<file name="engine/engine.php">
+		<operation action="before">
+			<searchcode><![CDATA[case "unsubscribe" :]]></searchcode>
+			<replacecode><![CDATA[case "jform" :
+		include (DLEPlugins::Check(ENGINE_DIR . '/modules/jform/jform.php'));
+		break;
+]]></replacecode>
+		</operation>
+	</file>
+</dleplugin>
