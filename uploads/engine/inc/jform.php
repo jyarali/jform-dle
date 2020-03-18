@@ -19,11 +19,36 @@ if (!defined('DATALIFEENGINE') or !defined('LOGGED_IN')) {
 define( 'SETTING', ENGINE_DIR . '/data/jform.txt' );
 $setting = unserialize( file_get_contents( SETTING ) );
 
+function jheader(){
+    echo <<<HTML
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="text-center">
+                <div class="col-md-4 h5 text-center">
+                    <a style="color: #207fbc" href="?mod=jform">
+                        <i class="fa fa-wpforms" style="font-size: 5rem;"></i> لیست فرم‌ها
+                    </a>
+                </div>
+                <div class="col-md-4 h5 text-center">
+                    <a style="color: #207fbc" href="?mod=jform&action=new">
+                        <i class="fa fa-pencil" style="font-size: 5rem;"></i> افزودن فرم جدید
+                    </a>
+                </div>
+                <div class="col-md-4 h5 text-center">
+                    <a style="color: #207fbc" href="?mod=jform&action=setting">
+                        <i class="fa fa-gears" style="font-size: 5rem;"></i> تنظیمات
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+HTML;
+}
 function copyright(){
 $text =  <<<HTML
     <div class="alert alert-info alert-styled-left alert-arrow-left alert-component">
         پلاگین فرمساز Jform<br>
-        برای بیان پیشنهادات و مشکلات خود در مورد این پلاگین می توانید به آدرس  گیت هاب پروژه مراجعه کنید: <a href="https://github.com/jyarali/jform-dle">Jform DLE Form Generator</a>
+        برای بیان پیشنهادات و مشکلات خود در مورد این پلاگین می توانید به آدرس  گیت هاب پروژه مراجعه کنید: <a target="_blank" href="https://github.com/jyarali/jform-dle">Jform DLE Form Generator</a>
         <br>
         برای حمایت از این پروژه لطفا در گیت هاب به پروژه ستاره بدین و اگه دوست داشتین، میتونید با استفاده از لینک مقابل و با پرداخت مبلغی دلخواه از نویسنده پلاگین حمایت کنید:
         <a target="_blank" href="https://idpay.ir/jyarali">Donate</a>
@@ -72,7 +97,8 @@ if ($action == "list") {
         </tr>";
     }
     $db->free();
-    copyright();
+    
+    jheader();
     echo <<<HTML
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -103,6 +129,7 @@ if ($action == "list") {
         </div> -->
     </div>
 HTML;
+copyright();
     echo <<<JSCRIPT
     <script>
     $(document).ready( function () {
@@ -142,7 +169,7 @@ if ($action == "new") {
         $access_groups .= "<option value=\"{$item['id']}\" {$selected}>{$item['group_name']}</option>";
     }
     
-
+    jheader();
     echo <<<HTML
     <style>
         #fb-rendered-form {
@@ -153,11 +180,6 @@ if ($action == "new") {
     <div class="panel panel-default">
         <div class="panel-heading">
         افزودن فرم
-            <!-- <div class="heading-elements not-collapsible">
-                <ul class="icons-list">
-                    <li><a href="#" data-toggle="modal" data-target="#advancedadd"><i class="fa fa-user-plus position-left"></i><span class="visible-lg-inline visible-md-inline visible-sm-inline">اضافه کردن کاربر </span></a></li>
-                </ul>
-            </div> -->
         </div>
         <div class="panel-body">
             <div class="form-group">
@@ -179,32 +201,6 @@ if ($action == "new") {
                     </div>
                 </div>	
             </div>
-            <!-- <div class="form-group">
-                <div class="row">
-                    <div class="col-sm-2">
-                            دسترسی گرو‌های کاربری به پلاگین فرمساز
-                    </div>
-                    <div class="col-sm-8">
-                        <select data-placeholder="لطفا گرو‌های کاربری را انتخاب کنید" class="uniform" name="access_groups[]" id="access_groups" multiple>
-                            <option value="0" disabled="">لطفا گروه های کاربری مورد نظر خود را انتخاب نمایید.</option>
-                            {$access_groups}
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-sm-2">
-                            دسترسی گرو‌های کاربری به پیام‌های پلاگین فرمساز
-                    </div>
-                    <div class="col-sm-8">
-                        <select data-placeholder="لطفا گرو‌های کاربری را انتخاب کنید" class="uniform" name="data_access_groups[]" id="data_access_groups" multiple>
-                            <option value="0" disabled="">لطفا گروه های کاربری مورد نظر خود را انتخاب نمایید.</option>
-                            {$access_groups}
-                        </select>
-                    </div>
-                </div>
-            </div> -->
 
             <div id="fb-editor"></div>
             <div id="fb-rendered-form">
@@ -421,6 +417,7 @@ JSCRIPT;
     foreach($user_group as $item){
         $groups .= $item['id'] . ':' . '"' . $item['group_name'] . '"' . ',';
     }
+    jheader();
     echo <<<HTML
     <style>
         #fb-rendered-form {
@@ -636,6 +633,7 @@ JSCRIPT;
     $css_array[] = 'https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css';
 
     echoheader("<i class=\"fa fa-file-text-o position-left\"></i><span class=\"text-semibold\">پلاگین فرمساز</span>", 'اطلاعات فرم');
+    jheader();
     echo <<<HTML
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -780,6 +778,7 @@ JSCRIPT;
     $css_array[] = 'https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css';
 
     echoheader("<i class=\"fa fa-file-text-o position-left\"></i><span class=\"text-semibold\">پلاگین فرمساز</span>", 'اطلاعات فرم');
+    jheader();
     echo <<<HTML
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -920,7 +919,7 @@ JSCRIPT;
                             $i++;
                         }
                     } else {
-                        $show = "<a class=\"btn btn-info\" target=\"_blank\" href=\"/uploads/files/jform/{$form_data[$field->name]}\">دانلود فایل</a>";
+                        $show = "<a class=\"btn btn-info\" target=\"_blank\" href=\"/uploads/files/jform/{$all_data['form_id']}/{$form_data[$field->name]}\">دانلود فایل</a>";
                     }
                 } else {
                     $show = "فایلی ارسال نشده است.";
@@ -961,6 +960,8 @@ JSCRIPT;
 					</tr>";
     }
     echoheader("<i class=\"fa fa-file-text-o position-left\"></i><span class=\"text-semibold\">پلاگین فرمساز</span>", 'اطلاعات پیام');
+
+    jheader();
     echo <<<HTML
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -1117,56 +1118,57 @@ HTML;
         $data_access_groups .= "<option value=\"{$item['id']}\" {$selected_data}>{$item['group_name']}</option>";
     }
     echoheader("<i class=\"fa fa-file-text-o position-left\"></i><span class=\"text-semibold\">پلاگین فرمساز</span>", 'تنظیمات پلاگین');
-    copyright();
+    jheader();
     echo <<<HTML
     <div class="panel panel-default">
-    <form method="POST">
-        <div class="panel-body">
-            تنظیمات پلاگین
-        </div>
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <tbody>
-                <tr>
-                    <td class="col-xs-6 col-sm-6 col-md-7">
-                        <h6 class="media-heading text-semibold">دسترسی به پلاگین:</h6>
-                        <span class="text-muted text-size-small hidden-xs">انتخاب گروه‌های کاربری که به قسمت‌های افزودن، ویرایش و حذف فرم دسترسی دارند.</span>
-                    </td>
-                    <td class="col-xs-6 col-sm-6 col-md-5">
-                        <div class="btn-group bootstrap-select uniform">
-                            <select data-placeholder="لطفا گرو‌های کاربری را انتخاب کنید" class="uniform" name="access_groups[]" id="access_groups" multiple>
-                                <option value="0" disabled="">لطفا گروه های کاربری مورد نظر خود را انتخاب نمایید.</option>
-                                {$access_groups}
-                            </select>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-xs-6 col-sm-6 col-md-7">
-                        <h6 class="media-heading text-semibold">دسترسی به پیام‌ها:</h6>
-                        <span class="text-muted text-size-small hidden-xs">انتخاب گروه‌های کاربری که به قسمت‌های لیست، ویرایش و حذف پیام‌ها دسترسی دارند.</span>
-                    </td>
-                    <td class="col-xs-6 col-sm-6 col-md-5">
-                        <div class="btn-group bootstrap-select uniform">
-                            <select data-placeholder="لطفا گرو‌های کاربری را انتخاب کنید" class="uniform" name="data_access_groups[]" id="data_access_groups" multiple>
-                                <option value="0" disabled="">لطفا گروه های کاربری مورد نظر خود را انتخاب نمایید.</option>
-                                {$data_access_groups}
-                            </select>
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>            
-        </div>
-        <div class="panel-footer">
-            <input type="hidden" name="mod" value="jform">
-            <input type="hidden" name="action" value="dosetting">
-            <input type="hidden" name="user_hash" value="{$dle_login_hash}">
-            <button type="submit" class="btn bg-success btn-sm btn-raised position-left legitRipple">ذخیره</button>
-        </div>
-    </form>
+        <form method="POST">
+            <div class="panel-body">
+                تنظیمات پلاگین
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <tbody>
+                    <tr>
+                        <td class="col-xs-6 col-sm-6 col-md-7">
+                            <h6 class="media-heading text-semibold">دسترسی به پلاگین:</h6>
+                            <span class="text-muted text-size-small hidden-xs">انتخاب گروه‌های کاربری که به قسمت‌های افزودن، ویرایش و حذف فرم دسترسی دارند.</span>
+                        </td>
+                        <td class="col-xs-6 col-sm-6 col-md-5">
+                            <div class="btn-group bootstrap-select uniform">
+                                <select data-placeholder="لطفا گرو‌های کاربری را انتخاب کنید" class="uniform" name="access_groups[]" id="access_groups" multiple>
+                                    <option value="0" disabled="">لطفا گروه های کاربری مورد نظر خود را انتخاب نمایید.</option>
+                                    {$access_groups}
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-xs-6 col-sm-6 col-md-7">
+                            <h6 class="media-heading text-semibold">دسترسی به پیام‌ها:</h6>
+                            <span class="text-muted text-size-small hidden-xs">انتخاب گروه‌های کاربری که به قسمت‌های لیست، ویرایش و حذف پیام‌ها دسترسی دارند.</span>
+                        </td>
+                        <td class="col-xs-6 col-sm-6 col-md-5">
+                            <div class="btn-group bootstrap-select uniform">
+                                <select data-placeholder="لطفا گرو‌های کاربری را انتخاب کنید" class="uniform" name="data_access_groups[]" id="data_access_groups" multiple>
+                                    <option value="0" disabled="">لطفا گروه های کاربری مورد نظر خود را انتخاب نمایید.</option>
+                                    {$data_access_groups}
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>            
+            </div>
+            <div class="panel-footer">
+                <input type="hidden" name="mod" value="jform">
+                <input type="hidden" name="action" value="dosetting">
+                <input type="hidden" name="user_hash" value="{$dle_login_hash}">
+                <button type="submit" class="btn bg-success btn-sm btn-raised position-left legitRipple">ذخیره</button>
+            </div>
+        </form>
+    </div>
 HTML;
-
+    copyright();
     echofooter();
     
 } elseif ($action == 'dosetting') {
