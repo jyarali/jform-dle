@@ -16,8 +16,6 @@ if( ! defined( 'DATALIFEENGINE' ) ) {
 	die( "Hacking attempt!" );
 }
 
-// include_once (DLEPlugins::Check(ENGINE_DIR . '/classes/thumb.class.php'));
-
 class JformFileUploader {
 
 	private $name;
