@@ -1,5 +1,5 @@
 # jform-dle
-Drag &amp; Drop From Generator for Datalife Engine
+Drag &amp; Drop Form Generator for Datalife Engine
 
 # How to install
 1. copy contents of uploads folder to your hosting root folder.
