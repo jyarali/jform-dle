@@ -90,8 +90,8 @@ if ($action == "list") {
         <td>{$row['date']}</td>
         <td class=\"text-center\">{$row['count']} ({$row['read_count']})</td>
         <td class=\"text-center\">
-            <a href=\"/{$PHP_SELF}?mod=jform&amp;action=msg_short&amp;formid={$row['id']}\" class=\"tip text-teal\" data-original-title=\"لیست پیام ها\"><i class=\"fa fa-envelope\"></i></a>&nbsp;&nbsp;
-            <a href=\"/{$PHP_SELF}?mod=jform&amp;action=editform&amp;formid={$row['id']}\" class=\"tip text-blue\" data-original-title=\"ویرایش فرم\"><i class=\"fa fa-pencil\"></i></a>&nbsp;&nbsp;
+            <a href=\"{$PHP_SELF}?mod=jform&amp;action=msg_short&amp;formid={$row['id']}\" class=\"tip text-teal\" data-original-title=\"لیست پیام ها\"><i class=\"fa fa-envelope\"></i></a>&nbsp;&nbsp;
+            <a href=\"{$PHP_SELF}?mod=jform&amp;action=editform&amp;formid={$row['id']}\" class=\"tip text-blue\" data-original-title=\"ویرایش فرم\"><i class=\"fa fa-pencil\"></i></a>&nbsp;&nbsp;
             <a href=\"#\" onclick=\"javascript:Remove('{$row['id']}'); return false;\" class=\"tip text-danger\" data-original-title=\"حذف فرم\"><i class=\"fa fa-trash\"></i></a>&nbsp;&nbsp;
             <a href=\"/index.php?do=jform&amp;formid={$row['id']}\" target=\"_blank\" class=\"tip text-orange\" data-original-title=\"نمایش فرم در سایت\"><i class=\"fa fa-desktop\"></i></a>&nbsp;&nbsp;			
         </td>
@@ -145,7 +145,7 @@ copyright();
     });
     function Remove( id ){
         DLEconfirm('آیا از حذف این فرم مطمئن هستید؟', 'پیام', function(){
-          window.location = "/{$PHP_SELF}?mod=jform&action=delete&formid=" + id;
+          window.location = "{$PHP_SELF}?mod=jform&action=delete&formid=" + id;
         });
         return false;
     }
@@ -616,7 +616,7 @@ JSCRIPT;
         <td class=\"text-center\">{$row['description']}</td>
         <td class=\"text-center\">{$row['date']}</td>
         <td class=\"text-center\">
-            <a href=\"/{$PHP_SELF}?mod=jform&amp;action=viewmsg&amp;id={$row['id']}\" target=\"_blank\" class=\"tip text-success\" data-original-title=\"مشاهده پیام\"><i class=\"fa fa-envelope-open-o\"></i></a>&nbsp;&nbsp;
+            <a href=\"{$PHP_SELF}?mod=jform&amp;action=viewmsg&amp;id={$row['id']}\" target=\"_blank\" class=\"tip text-success\" data-original-title=\"مشاهده پیام\"><i class=\"fa fa-envelope-open-o\"></i></a>&nbsp;&nbsp;
             <a href=\"#\" onclick=\"javascript:Remove('{$row['id']}'); return false;\" class=\"tip text-danger\" data-original-title=\"حذف پیام\"><i class=\"fa fa-trash\"></i></a>&nbsp;&nbsp;
         </td>
         </tr>";
@@ -624,14 +624,14 @@ JSCRIPT;
     }
     $db->free();
 
-    $js_array[] = 'https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js';
-    $js_array[] = 'https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap.min.js';
-    $js_array[] = 'https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js';
-    $js_array[] = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js';
-    $js_array[] = 'https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js';
-    $js_array[] = 'https://cdn.datatables.net/buttons/1.6.1/js/buttons.colVis.min.js';
-    $css_array[] = 'https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css';
-    $css_array[] = 'https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css';
+    $js_array[] = 'engine/skins/javascripts/jquery.dataTables.js';
+    $js_array[] = 'engine/skins/javascripts/dataTables.bootstrap.min.js';
+    $js_array[] = 'engine/skins/javascripts/dataTables.buttons.min.js';
+    $js_array[] = 'engine/skins/javascripts/jszip.min.js';
+    $js_array[] = 'engine/skins/javascripts/buttons.html5.min.js';
+    $js_array[] = 'engine/skins/javascripts/buttons.colVis.min.js';
+    $css_array[] = 'engine/skins/stylesheets/dataTables.bootstrap4.min.css';
+    $css_array[] = 'engine/skins/stylesheets/buttons.dataTables.min.css';
 
     echoheader("<i class=\"fa fa-file-text-o position-left\"></i><span class=\"text-semibold\">پلاگین فرمساز</span>", 'اطلاعات فرم');
     jheader();
@@ -711,7 +711,7 @@ echo <<<JSCRIPT
     });
     function Remove( id ){
         DLEconfirm('آیا از حذف این فرم مطمئن هستید؟', 'پیام', function(){
-          window.location = "/{$PHP_SELF}?mod=jform&action=delmsg&id=" + id;
+          window.location = "{$PHP_SELF}?mod=jform&action=delmsg&id=" + id;
         });
         return false;
     }
@@ -762,21 +762,21 @@ JSCRIPT;
         {$dynamic_data}
         <td class=\"text-center\">{$row['date']}</td>
         <td class=\"text-center\">
-            <a href=\"/{$PHP_SELF}?mod=jform&amp;action=viewmsg&amp;id={$row['id']}\" target=\"_blank\" class=\"tip text-success\" data-original-title=\"مشاهده پیام\"><i class=\"fa fa-envelope-open-o\"></i></a>&nbsp;&nbsp;
+            <a href=\"{$PHP_SELF}?mod=jform&amp;action=viewmsg&amp;id={$row['id']}\" target=\"_blank\" class=\"tip text-success\" data-original-title=\"مشاهده پیام\"><i class=\"fa fa-envelope-open-o\"></i></a>&nbsp;&nbsp;
             <a href=\"#\" onclick=\"javascript:Remove('{$row['id']}'); return false;\" class=\"tip text-danger\" data-original-title=\"حذف پیام\"><i class=\"fa fa-trash\"></i></a>&nbsp;&nbsp;
         </td>
         </tr>";
     }
     $db->free();
 
-    $js_array[] = 'https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js';
-    $js_array[] = 'https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap.min.js';
-    $js_array[] = 'https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js';
-    $js_array[] = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js';
-    $js_array[] = 'https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js';
-    $js_array[] = 'https://cdn.datatables.net/buttons/1.6.1/js/buttons.colVis.min.js';
-    $css_array[] = 'https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css';
-    $css_array[] = 'https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css';
+    $js_array[] = 'engine/skins/javascripts/jquery.dataTables.js';
+    $js_array[] = 'engine/skins/javascripts/dataTables.bootstrap.min.js';
+    $js_array[] = 'engine/skins/javascripts/dataTables.buttons.min.js';
+    $js_array[] = 'engine/skins/javascripts/jszip.min.js';
+    $js_array[] = 'engine/skins/javascripts/buttons.html5.min.js';
+    $js_array[] = 'engine/skins/javascripts/buttons.colVis.min.js';
+    $css_array[] = 'engine/skins/stylesheets/dataTables.bootstrap4.min.css';
+    $css_array[] = 'engine/skins/stylesheets/buttons.dataTables.min.css';
 
     echoheader("<i class=\"fa fa-file-text-o position-left\"></i><span class=\"text-semibold\">پلاگین فرمساز</span>", 'اطلاعات فرم');
     jheader();
@@ -848,7 +848,7 @@ echo <<<JSCRIPT
     });
     function Remove( id ){
         DLEconfirm('آیا از حذف این فرم مطمئن هستید؟', 'پیام', function(){
-          window.location = "/{$PHP_SELF}?mod=jform&action=delmsg&id=" + id;
+          window.location = "{$PHP_SELF}?mod=jform&action=delmsg&id=" + id;
         });
         return false;
     }
