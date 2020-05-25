@@ -82,6 +82,12 @@ if ($action == "list") {
         $row['active'] = $row['active'] == 1 ? "<span class=\"tip text-success\" data-original-title=\"فعال\"><b><i class=\"fa fa-check-circle\"></i></b></span>":"<span class=\"tip text-danger\" data-original-title=\"غیرفعال\"><b><i class=\"fa fa-exclamation-circle\"></i></b></span>";
         $row['date'] = jdate('Y/m/d', strtotime( $row['date']));
         $row['read_count'] = ($row['read_count'] == null ? 0 : $row['read_count']);
+        if ($setting['seo']){
+            $alt_name = fatotranslit( preg_replace("/[^\x{0600}-\x{06FF}a-zA-Z0-9_.;»«-]/u", "-", $row['title']), true, false );
+            $form_url = "{$config['http_home_url']}jform/{$row['id']}-{$alt_name}.html";
+        } else {
+            $form_url = "{$config['http_home_url']}index.php?do=jform&amp;formid={$row['id']}";
+        }
         $items .="<tr>
         <td>{$row['id']}</td>
         <td>{$row['title']}</td>
@@ -93,7 +99,7 @@ if ($action == "list") {
             <a href=\"{$PHP_SELF}?mod=jform&amp;action=msg_short&amp;formid={$row['id']}\" class=\"tip text-teal\" data-original-title=\"لیست پیام ها\"><i class=\"fa fa-envelope\"></i></a>&nbsp;&nbsp;
             <a href=\"{$PHP_SELF}?mod=jform&amp;action=editform&amp;formid={$row['id']}\" class=\"tip text-blue\" data-original-title=\"ویرایش فرم\"><i class=\"fa fa-pencil\"></i></a>&nbsp;&nbsp;
             <a href=\"#\" onclick=\"javascript:Remove('{$row['id']}'); return false;\" class=\"tip text-danger\" data-original-title=\"حذف فرم\"><i class=\"fa fa-trash\"></i></a>&nbsp;&nbsp;
-            <a href=\"/index.php?do=jform&amp;formid={$row['id']}\" target=\"_blank\" class=\"tip text-orange\" data-original-title=\"نمایش فرم در سایت\"><i class=\"fa fa-desktop\"></i></a>&nbsp;&nbsp;			
+            <a href=\"{$form_url}\" target=\"_blank\" class=\"tip text-orange\" data-original-title=\"نمایش فرم در سایت\"><i class=\"fa fa-desktop\"></i></a>&nbsp;&nbsp;			
         </td>
         </tr>";
     }
@@ -288,7 +294,7 @@ HTML;
             var security_code = ($('#jsecurity_code').is(":checked") ? 1:0);
             var tracking = ($('#jtracking').is(":checked") ? 1:0);
             var newdata = formBuilder.actions.getData('json');
-            $('#data').val(newdata);
+            $('#data').val(JSON.stringify(newdata));
             $('#title').val(title);
             $('#active').val(active);
             $('#security_code').val(security_code);
@@ -335,7 +341,7 @@ JSCRIPT;
     $id = intval($_REQUEST['formid']);
     $folder = ROOT_DIR . "/uploads/files/jform/{$id}";
     if (is_dir( $folder )) {
-        // scan files indide directory
+        // scan files inside directory
         $files = glob($folder . '/*');
         // remove all files inside
         foreach($files as $file) {
@@ -486,7 +492,7 @@ HTML;
         }
       };
     $(document).ready(function(){
-        var formData = '{$form['data']}';
+        var formData = {$form['data']};
             var jdata,fbEditor = $(document.getElementById('fb-editor')),
               formContainer = $(document.getElementById('fb-rendered-form')),
               fbOptions = {
@@ -544,13 +550,52 @@ HTML;
             var security_code = ($('#jsecurity_code').is(":checked") ? 1:0);
             var tracking = ($('#jtracking').is(":checked") ? 1:0);
             var newdata = formBuilder.actions.getData('json');
-            $('#data').val(newdata);
+            $('#data').val(JSON.stringify(newdata));
             $('#title').val(title);
             $('#active').val(active);
             $('#security_code').val(security_code);
             $('#tracking').val(tracking);
             $('#doedit').submit();
         });
+        
+        // extract size and type for file fields
+        var t = JSON.parse(formData);
+        var all_sizes = [];
+        var all_types = [];
+        t.forEach(function(item){
+            if (item.file_size){
+                all_sizes.push ({
+                    'name' : item.name,
+                    'size' : item.file_size
+                });
+            }
+            if (item.file_types){
+                all_types.push({
+                    'name' : item.name,
+                    'type' : item.file_types
+                });
+            }
+        });
+
+        // wait for form editor to load - then apply file fields size and type from database (if there is file field inside form!)
+        $(document).on('loaded', function(){
+            if (all_sizes.length > 0) {
+                all_sizes.forEach(function(item){
+                    var a = $('input').filter(function() { return this.value == item.name });
+                    var b = $('input[name="file_size"]');
+                    var c = a.parent().parent().parent().find(b);
+                    c.val(parseInt(item.size));
+                })
+            }
+            if (all_types.length > 0) {
+                all_types.forEach(function(item){
+                    var a = $('input').filter(function() { return this.value == item.name });
+                    var b = $('input[name="file_types"]');
+                    var c = a.parent().parent().parent().find(b);
+                    c.val(item.type);
+                })
+            }
+        });        
           
     });
     </script>
@@ -580,7 +625,7 @@ JSCRIPT;
     $parse = new ParseFilter();
 
     $title = stripslashes($parse->process(trim(strip_tags($_POST['title']))));
-    $data = $_POST['data'];
+    $data = $db->safesql($_POST['data']);
     $active = isset( $_POST['active'] ) ? intval( $_POST['active'] ) : 0;
     $security_code = isset( $_POST['security_code'] ) ? intval( $_POST['security_code'] ) : 0;
     $tracking = isset( $_POST['tracking'] ) ? intval( $_POST['tracking'] ) : 0;
@@ -730,7 +775,8 @@ JSCRIPT;
     }
     $id = intval($_REQUEST['formid']);
     $form = $db->super_query("SELECT * FROM " . PREFIX . "_jform WHERE id='{$id}' ");
-    $data = json_decode($form['data']);
+    $data = json_decode(json_decode($form['data']));
+    
     // get fields which have name (not fields like paragraph or header)
     foreach($data as $item) {
         if (isset($item->name) ){
@@ -868,11 +914,9 @@ JSCRIPT;
     SELECT jd.*,j.title,j.data,j.tracking,u.name FROM (SELECT * FROM " . PREFIX . "_jform_data jd WHERE id={$id}) jd LEFT JOIN " 
     . PREFIX . "_jform j ON (jd.form_id=j.id) LEFT JOIN " . PREFIX . "_users u ON (jd.user_id=u.user_id)"
     );
-    // header('Content-Type: application/json');
-    // echo json_encode($all_data);
-    // exit();
+    
     $js_array[] = "engine/editor/jscripts/tiny_mce/tinymce.min.js";
-    $data = json_decode($all_data['data']);
+    $data = json_decode(json_decode($all_data['data']));
     $form_data = json_decode($all_data['form_data'], true);
     // get fields which have name (not fields like paragraph or header)
     foreach($data as $item) {
@@ -883,6 +927,9 @@ JSCRIPT;
     $items = "";
     // set dynamic table headers and data
     foreach ($form_fields as $field) {
+        if ($field->type != 'file'){
+            $form_data[$field->name] = htmlentities($form_data[$field->name]);
+        }
         switch ($field->type) {
             case 'select':
                 if (isset($field->multiple)) {
@@ -1086,7 +1133,7 @@ HTML;
 
     $form = $db->super_query("SELECT j.id,j.data,jd.form_data FROM (SELECT form_id,form_data FROM " . PREFIX . "_jform_data WHERE id={$id}) jd 
     LEFT JOIN " . PREFIX . "_jform j ON (jd.form_id=j.id)");
-    $fields = json_decode($form['data']);
+    $fields = json_decode(json_decode($form['data']));
     $data = json_decode($form['form_data'], true);
     
     foreach ($fields as $field) {
@@ -1118,6 +1165,7 @@ HTML;
         $access_groups .= "<option value=\"{$item['id']}\" {$selected}>{$item['group_name']}</option>";
         $data_access_groups .= "<option value=\"{$item['id']}\" {$selected_data}>{$item['group_name']}</option>";
     }
+    $seo = $setting['seo'] ? 'checked':'';
     echoheader("<i class=\"fa fa-file-text-o position-left\"></i><span class=\"text-semibold\">پلاگین فرمساز</span>", 'تنظیمات پلاگین');
     jheader();
     echo <<<HTML
@@ -1157,6 +1205,15 @@ HTML;
                             </div>
                         </td>
                     </tr>
+                    <tr>
+                        <td class="col-xs-6 col-sm-6 col-md-7">
+                            <h6 class="media-heading text-semibold">فعال بودن سئوی آدرس فرم‌ها:</h6>
+                            <span class="text-muted text-size-small hidden-xs">اگر فعال باشد، آدرس ها بصورت http://yoursite.com/jform/1-عنوان-فرم.html و در حالت غیر فعال، آدرس ها بصورت http://yoursite.com/index.php?do=jform&formid=1 تعریف خواهند شد.</span>
+                        </td>
+                        <td class="col-xs-6 col-sm-6 col-md-5">
+                            <input class="switch" type="checkbox" name="seo" value="1" {$seo}>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>            
             </div>
@@ -1182,6 +1239,7 @@ HTML;
     $prev = (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'javascript:history.go(-1)');
     $access_groups = $_POST['access_groups'];
     $data_access_groups = $_POST['data_access_groups'];
+    $seo = isset($_POST['seo']) ? intval($_POST['seo']):0;
     if (!is_array($access_groups) OR !is_array($data_access_groups)) {
         msg( "error", 'خطا', 'تنظیمات معتبر نیست', $prev );
     }
@@ -1192,6 +1250,7 @@ HTML;
     $new_setting = [
         'access_group' => $access_groups,
         'data_access_group' => $data_access_groups,
+        'seo' => $seo
     ];
 
     //save new setting

@@ -3,7 +3,7 @@
 	<name>Jform Form Generator</name>
 	<description>اولین پلاگین فرمساز دیتالایف انجین با قابلیت Drag&amp;Drop</description>
 	<icon></icon>
-	<version>1.2</version>
+	<version>1.3</version>
 	<dleversion>13</dleversion>
 	<versioncompare>greater</versioncompare>
 	<upgradeurl>https://dlefa.ir/updates/jform.xml</upgradeurl>
@@ -40,7 +40,8 @@ CREATE TABLE IF NOT EXISTS `{prefix}_jform_data` (
 DROP TABLE IF EXISTS `{prefix}_jform_data`;]]></mysqldelete>
 	<phpinstall><![CDATA[$setting = [
 	'access_group' => [1],
-  	'data_access_group' => [1]
+  	'data_access_group' => [1],
+	'seo' => 0
 ];
 file_put_contents (ENGINE_DIR . '/data/jform.txt', serialize($setting));]]></phpinstall>
 	<phpupgrade><![CDATA[]]></phpupgrade>

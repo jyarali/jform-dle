@@ -51,8 +51,6 @@ if (isset($_REQUEST['mod']) AND $_REQUEST['mod'] = 'track') {
     }
 }
 elseif (isset($_POST['send'])) {
-
-    $stop = "";
     if ($_REQUEST['user_hash'] == "" or $_REQUEST['user_hash'] != $dle_login_hash) {
         $stop .= "<li>" . $lang['sess_error'] . "</li>";
     }
@@ -76,7 +74,7 @@ elseif (isset($_POST['send'])) {
         msgbox('خطا', 'فرم غیرفعال است.');
         return false;
     }
-    $data = json_decode($form['data']);
+    $data = json_decode(json_decode($form['data']));
     // access control system
     foreach($data as $afield) {
         if (isset($afield->role)){
@@ -148,7 +146,7 @@ elseif (isset($_POST['send'])) {
                         if (is_array($result) AND isset($result['error'])){
                             msgbox('خطا', $result['error'] . "<br><a href=\"javascript:history.go(-1)\">{$lang['all_prev']}</a>");
                             return false;
-                        } else $form_data[$field->name] = $result; 
+                        } else $form_data[$field->name] = $result;
 
                         break;
 
@@ -169,8 +167,8 @@ elseif (isset($_POST['send'])) {
         if ($form['tracking']) {
             $tracking_code = bin2hex(random_bytes(10));
         }
-
         $form_data = $db->safesql(json_encode($form_data, JSON_UNESCAPED_UNICODE));
+  
         $db->query("INSERT INTO " . PREFIX . "_jform_data (user_id,form_id,form_data,tracking) values ('{$member_id['user_id']}', '$id', '$form_data', '$tracking_code')");
         // send pm to form creator,
         include_once DLEPlugins::Check(ENGINE_DIR . '/api/api.class.php');
@@ -200,7 +198,7 @@ elseif (isset($_POST['send'])) {
         return false;
     }
     // access control system
-    $data = json_decode($form['data']);
+    $data = json_decode(json_decode($form['data']));
     foreach($data as $afield) {
         if (isset($afield->role)){
             // if field has role, check with current user usergroup
@@ -221,10 +219,6 @@ elseif (isset($_POST['send'])) {
             @header("Content-type: text/html; charset=" . $config['charset']);
             echo file_get_contents(ROOT_DIR . '/404.html');
             die();
-        } else {
-            $lang['feed_error_1'] = str_replace('{name}', $template_name . '.tpl', $lang['feed_error_1']);
-            msgbox($lang['all_info'], $lang['feed_error_1']);
-            $template_name = "feedback";
         }
     }
     if ($form['security_code']) {
@@ -245,7 +239,7 @@ elseif (isset($_POST['send'])) {
 </form>";
     $onload_scripts[] = <<<HTML
 	var formRenderInstance = $('.jform-render').formRender({
-		formData: '{$access_data}'
+		formData: {$access_data}
     });
 HTML;
     $tpl->compile('content');
